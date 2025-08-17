@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live TV - Brightlens News</title>
+    
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1e1e1e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Brightlens News" />
+    <link rel="apple-touch-icon" href="/assets/icon-192.svg" />
+    <meta name="description" content="Watch 30 free live channels instantly. News, Sports, Entertainment, Science.">
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary-color:#2563eb;--background-color:#0f172a;--text-color:#f1f5f9;--surface-color:#1e293b;--border-color:#334155}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--background-color);color:var(--text-color);line-height:1.6}
+        .header{background:var(--surface-color);border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:100}
+    </style>
+    <link rel="preload" href="css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="css/themes.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/settings.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/live-tv.css?v=1" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/styles.css"><link rel="stylesheet" href="css/themes.css"><link rel="stylesheet" href="/css/settings.css"><link rel="stylesheet" href="/css/live-tv.css"></noscript>
+
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="js/push-notifications.js" defer></script>
+    <script src="js/sidebar-navigation.js" defer></script>
+    
+    <!-- Service worker intentionally not registered on Live TV to avoid caching issues during updates -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preconnect" href="https://www.youtube.com">
+    <link rel="preconnect" href="https://i.ytimg.com">
+    <link rel="preconnect" href="https://pluto.tv">
+    <link rel="preconnect" href="https://tubitv.com">
+    <link rel="preconnect" href="https://watch.plex.tv">
+    <link rel="preconnect" href="https://www.redbull.com">
+    <link rel="preconnect" href="https://fubosportsnetwork.com">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+</head>
+<body data-theme="dark">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="/" style="color: inherit; text-decoration: none;"><i class="fas fa-newspaper"></i> Brightlens News</a></h1>
+                </div>
+                <nav class="nav">
+                    <div class="nav-links">
+                        <a href="/" class="nav-link">Home</a>
+                        <a href="/breaking" class="nav-link">Breaking</a>
+                        <a href="/kenya" class="nav-link">Kenya</a>
+                        <a href="/world" class="nav-link">World</a>
+                        <a href="/entertainment" class="nav-link">Entertainment</a>
+                        <a href="/technology" class="nav-link">Technology</a>
+                        <a href="/business" class="nav-link">Business</a>
+                        <a href="/sports" class="nav-link">Sports</a>
+                        <a href="/health" class="nav-link">Health</a>
+                        <a href="/food" class="nav-link">Food</a>
+                        <a href="/crypto" class="nav-link">Crypto</a>
+                        <a href="/astronomy" class="nav-link">Astronomy</a>
+                        <a href="/aviation" class="nav-link">Aviation</a>
+                        <a href="/weather" class="nav-link">Weather</a>
+                        <a href="/live-tv" class="nav-link active">Live TV</a>
+                    </div>
+                    <div class="nav-controls">
+                        <button id="theme-toggle" class="theme-toggle" title="Change Theme">
+                            <i class="fas fa-palette"></i>
+                        </button>
+                    </div>
+                    <script src="/js/settings.js" defer></script>
+                    <script src="/js/themes.js" defer></script>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div id="player-box" class="player-sticky-top player-sticky-bottom player-hidden">
+                <div id="player-title" style="font-size:1.1rem;padding:.5rem 1rem;color:var(--theme-text, var(--text-color));display:flex;align-items:center;gap:.5rem">
+                    <span class="live-pill" aria-hidden="true">● LIVE</span>
+                    <img id="player-icon" alt="" width="20" height="20" style="object-fit:contain" />
+                    <span id="player-name">Select a channel</span>
+                </div>
+                <div id="player-loading" class="player-loading" hidden>
+                    <div class="spinner"></div>
+                    <span>Loading stream…</span>
+                </div>
+                <div id="player-status" class="player-status" aria-live="polite"></div>
+                <iframe id="live-player" aria-label="Live stream player" tabindex="0" allowfullscreen></iframe>
+                <button class="close-btn" aria-label="Close player" title="Close" style="position:absolute;top:.5rem;right:.5rem;font-size:1.5rem;color:var(--theme-text, var(--text-color));background:transparent;border:none;cursor:pointer">&times;</button>
+            </div>
+
+            <div class="filters" role="toolbar" aria-label="Live TV Controls" style="display:flex;gap:.5rem;align-items:center;justify-content:flex-start;margin:.5rem 0 1rem">
+                <div class="tabs" role="tablist" aria-label="Categories" style="display:flex;flex-wrap:wrap;gap:.5rem">
+                    <button role="tab" aria-selected="true" class="filter-btn" data-cat="All">All</button>
+                    <button role="tab" aria-selected="false" class="filter-btn" data-cat="News">News</button>
+                    <button role="tab" aria-selected="false" class="filter-btn" data-cat="Sports">Sports</button>
+                    <button role="tab" aria-selected="false" class="filter-btn" data-cat="Entertainment">Entertainment</button>
+                    <button role="tab" aria-selected="false" class="filter-btn" data-cat="Science">Science</button>
+                </div>
+                <button id="favorites-toggle" class="filter-btn" title="Show Favorites"><i class="fas fa-star"></i> Favorites</button>
+            </div>
+            <section id="channel-grid" class="cards-grid" aria-live="polite"></section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-wave">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="https://www.w3.org/2000/svg">
+                <path d="M0,64L48,58.7C96,53,192,43,288,48C384,53,480,75,576,80C672,85,768,75,864,64C960,53,1056,43,1152,48C1248,53,1344,75,1392,85.3L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z" fill="var(--primary-color)"/>
+            </svg>
+        </div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section footer-brand">
+                    <div class="footer-logo">
+                        <h4>
+                            <i class="fas fa-newspaper footer-icon"></i>
+                            Brightlens News
+                        </h4>
+                        <div class="footer-tagline">Your Gateway to Global News</div>
+                    </div>
+                    <p>Your trusted source for comprehensive news coverage from multiple reliable sources worldwide. Stay informed with real-time updates.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="/js/live-tv.js?v=1"></script>
+</body>
+</html>

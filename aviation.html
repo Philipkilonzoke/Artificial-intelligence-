@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviation News & Live Flights - Brightlens News</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1e1e1e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Brightlens News" />
+    <link rel="apple-touch-icon" href="/assets/icon-192.svg" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Get the latest aviation news, live flight data, airline updates, and aviation industry insights from reliable sources worldwide.">
+    <meta name="keywords" content="aviation news, flight data, airlines, airports, aviation industry, live flights, flight tracker, Brightlens">
+    <meta name="author" content="Philip Kilonzo">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Aviation News & Live Flights - Brightlens News">
+    <meta property="og:description" content="Get the latest aviation news and live flight data from reliable sources.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://philipkilonzoke.github.io/aviation">
+    
+    <!-- Critical CSS Inline for Faster Loading -->
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary-color:#2563eb;--background-color:#ffffff;--text-color:#1e293b;--surface-color:#f8fafc;--border-color:#e2e8f0}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--background-color);color:var(--text-color);line-height:1.6}
+        .loading-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--primary-color);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.3s}
+        .loading-screen.hidden{opacity:0;visibility:hidden}
+        .loading-container{text-align:center;color:white}
+        .loading-spinner{width:60px;height:60px;border:4px solid rgba(255,255,255,0.3);border-top:4px solid white;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .header{background:var(--surface-color);border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:100}
+    </style>
+    <!-- Non-Critical CSS Files -->
+    <link rel="preload" href="css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="css/themes.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/settings.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/styles.css"><link rel="stylesheet" href="css/themes.css"><link rel="stylesheet" href="/css/settings.css"></noscript>
+    
+    <!-- OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="js/push-notifications.js" defer></script>
+
+    <!-- Sidebar Navigation Script -->
+    <script src="js/sidebar-navigation.js" defer></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    
+    <!-- Day.js for date formatting -->
+    <script src="https://unpkg.com/dayjs@1.11.10/dayjs.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.11.10/plugin/relativeTime.js"></script>
+    <script src="https://unpkg.com/dayjs@1.11.10/plugin/utc.js"></script>
+    <script src="https://unpkg.com/dayjs@1.11.10/plugin/timezone.js"></script>
+    
+    <!-- Share Utilities -->
+    <script src="js/share-utils.js"></script>
+    
+    <!-- AI Image Enhancement -->
+    <script src="js/ai-image-enhancement.js"></script>
+    
+    <!-- AI Translation & TTS -->
+    <script src="js/ai-translation-tts.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <h2>Brightlens News</h2>
+            <p>Loading aviation data...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="/" style="color: inherit; text-decoration: none;"><i class="fas fa-newspaper"></i> Brightlens News</a></h1>
+                </div>
+                <nav class="nav">
+                    <div class="nav-links">
+                        <a href="/" class="nav-link">Home</a>
+                        <a href="/breaking" class="nav-link">Breaking</a>
+                        <a href="/kenya" class="nav-link">Kenya</a>
+                        <a href="/world" class="nav-link">World</a>
+                        <a href="/entertainment" class="nav-link">Entertainment</a>
+                        <a href="/technology" class="nav-link">Technology</a>
+                        <a href="/business" class="nav-link">Business</a>
+                        <a href="/sports" class="nav-link">Sports</a>
+                        <a href="/health" class="nav-link">Health</a>
+                        <a href="/lifestyle" class="nav-link">Lifestyle</a>
+                        <a href="/food" class="nav-link">Food</a>
+                        <a href="/crypto" class="nav-link">Crypto</a>
+                        <a href="/astronomy" class="nav-link">Astronomy</a>
+                        <a href="/aviation" class="nav-link active">Aviation</a>
+                    </div>
+                    <div class="nav-controls">
+                        <button id="theme-toggle" class="theme-toggle" title="Change Theme">
+                            <i class="fas fa-palette"></i>
+                        </button>
+                    </div>
+                    <script src="/js/settings.js" defer></script>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Page Header with Live Clock -->
+            <div class="page-header">
+                <div class="page-title-section">
+                    <h1 class="page-title">
+                        <i class="fas fa-plane"></i>
+                        Aviation Hub
+                    </h1>
+                    <!-- Removed subtitle about latest aviation news -->
+                </div>
+                <div class="live-info">
+                    <div class="live-clock">
+                        <i class="fas fa-clock"></i>
+                        <span id="live-clock">Loading...</span>
+                        <span class="timezone">UTC</span>
+                    </div>
+                    <div class="last-updated">
+                        <i class="fas fa-sync-alt"></i>
+                        <span id="global-last-updated">Initializing...</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Live Flights Section -->
+            <section class="live-flights-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-plane-departure"></i>
+                        Live Flight Tracker
+                    </h2>
+                    <div class="section-meta">
+                        <span id="flight-count">Loading flights...</span>
+                        <span id="flight-last-updated"></span>
+                    </div>
+                </div>
+
+                <!-- Aviation Controls -->
+                <div class="aviation-controls">
+                    <div class="search-filter-container">
+                        <div class="search-container">
+                            <input type="text" id="flight-search" placeholder="Search by airline, flight number, or airport code..." class="search-input">
+                            <button id="search-btn" class="search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="filter-container">
+                            <select id="status-filter" class="status-filter">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="landed">Landed</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="delayed">Delayed</option>
+                            </select>
+                        </div>
+                        <div class="sort-container">
+                            <select id="sort-order" class="status-filter" title="Sort by">
+                                <option value="dep-asc">Dep Time ↑</option>
+                                <option value="dep-desc">Dep Time ↓</option>
+                                <option value="arr-asc">Arr Time ↑</option>
+                                <option value="arr-desc">Arr Time ↓</option>
+                                <option value="airline">Airline A→Z</option>
+                            </select>
+                        </div>
+                        <div class="tz-container">
+                            <button id="tz-toggle" class="refresh-btn" title="Toggle UTC/Local">UTC</button>
+                        </div>
+                        <div class="refresh-container">
+                            <button id="refresh-btn" class="refresh-btn" title="Refresh flight data">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <span class="auto-refresh-indicator">
+                                <i class="fas fa-clock"></i>
+                                Auto-refresh: <span id="refresh-countdown">60</span>s
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flight Loading -->
+                <div id="flight-loading" class="news-loading">
+                    <div class="loading-spinner-small"></div>
+                    <p>Fetching live flight data...</p>
+                </div>
+
+                <!-- Flight Error -->
+                <div id="flight-error" class="news-error" style="display: none;">
+                    <div class="error-content">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Unable to Load Flight Data</h3>
+                        <p id="error-message">We're having trouble connecting to aviation data sources. Please check your internet connection and try again.</p>
+                        <button id="retry-button" class="retry-button">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Flights Grid -->
+                <div id="flights-container" class="news-grid flights-grid" style="display: none;">
+                    <!-- Flight cards will be populated here -->
+                </div>
+
+                <!-- No Results -->
+                <div id="no-results" class="no-results" style="display: none;">
+                    <div class="no-results-content">
+                        <i class="fas fa-search"></i>
+                        <h3>No Flights Found</h3>
+                        <p>No flights match your current search criteria. Try adjusting your search terms or filters.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-wave">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        <div class="footer-content">
+            <div class="footer-section footer-brand">
+                <div class="footer-logo">
+                    <h3>
+                        <i class="fas fa-newspaper footer-icon"></i>
+                        Brightlens News
+                    </h3>
+                    <div class="footer-tagline">Your Gateway to Global News</div>
+                </div>
+                
+                <div class="footer-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Coverage</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">17+</div>
+                        <div class="stat-label">Categories</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">Stories</div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4><i class="fas fa-list-ul"></i> News Categories</h4>
+                <div class="footer-links">
+                    <a href="/breaking" data-category="breaking" class="footer-link">
+                        <i class="fas fa-bolt"></i> Breaking News
+                    </a>
+                    <a href="/kenya" data-category="kenya" class="footer-link">
+                        <i class="fas fa-map-marker-alt"></i> Kenya
+                    </a>
+                    <a href="/world" data-category="world" class="footer-link">
+                        <i class="fas fa-globe"></i> World
+                    </a>
+                    <a href="/entertainment" data-category="entertainment" class="footer-link">
+                        <i class="fas fa-film"></i> Entertainment
+                    </a>
+                    <a href="/technology" data-category="technology" class="footer-link">
+                        <i class="fas fa-microchip"></i> Technology
+                    </a>
+                    <a href="/business" data-category="business" class="footer-link">
+                        <i class="fas fa-chart-line"></i> Business
+                    </a>
+                    <a href="/sports" data-category="sports" class="footer-link">
+                        <i class="fas fa-futbol"></i> Sports
+                    </a>
+                    <a href="/health" data-category="health" class="footer-link">
+                        <i class="fas fa-heartbeat"></i> Health
+                    </a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4><i class="fas fa-share-alt"></i> Connect With Us</h4>
+                <div class="social-links">
+                    <a href="https://instagram.com/philipkilonzo.ke" target="_blank" rel="noopener noreferrer" class="social-link instagram">
+                        <div class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="social-info">
+                            <span class="social-platform">Instagram</span>
+                            <span class="social-handle">@philipkilonzo.ke</span>
+                        </div>
+                    </a>
+                    <a href="https://wa.me/254791943551" target="_blank" rel="noopener noreferrer" class="social-link whatsapp">
+                        <div class="social-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="social-info">
+                            <span class="social-platform">WhatsApp</span>
+                            <span class="social-handle">+254 791 943 551</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="footer-newsletter">
+                    <h5>Stay Updated</h5>
+                    <p>Get the latest news delivered to your inbox</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 Brightlens News. All rights reserved.</p>
+                </div>
+                <div class="footer-links-bottom">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-glow"></div>
+    </footer>
+
+    <!-- Theme Selector Modal -->
+    <div id="theme-modal" class="theme-modal">
+        <div class="theme-modal-content">
+            <div class="theme-modal-header">
+                <h3>Choose Theme</h3>
+                <button class="theme-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="theme-grid">
+                <!-- Dynamically populated by js/themes.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/themes.js"></script>
+    <script>
+        // Aviation-specific variables
+        let allFlights = [];
+        let filteredFlights = [];
+
+        let refreshInterval;
+        let countdownInterval;
+        let clockInterval;
+        let refreshCountdown = 60;
+        let useLocalTime = false;
+        const favKey = 'bl_fav_flights';
+        const getFavs = ()=>{ try{return new Set(JSON.parse(localStorage.getItem(favKey)||'[]'));}catch{return new Set();} };
+        const setFavs = (s)=>{ try{localStorage.setItem(favKey, JSON.stringify([...s]));}catch{} };
+        let favorites = getFavs();
+
+        // API Configuration
+        const AVIATION_API_KEY = '826b3184165e11d389a2a31d089021a4';
+        const AVIATION_API_URL = `https://api.aviationstack.com/v1/flights?access_key=${AVIATION_API_KEY}`;
+
+        // Airline color schemes for better visual distinction
+        const AIRLINE_COLORS = {
+            'Kenya Airways': '#C41230',
+            'British Airways': '#075AAA', 
+            'Emirates': '#D71921',
+            'Lufthansa': '#F9BA00',
+            'Air France': '#002157',
+            'Qatar Airways': '#5C0633',
+            'American Airlines': '#CC092F',
+            'Delta Air Lines': '#003366',
+            'United Airlines': '#0E2452'
+        };
+
+        // Airline IATA code to name fallback map
+        const AIRLINE_IATA_MAP = {
+            'KQ': 'Kenya Airways',
+            'BA': 'British Airways',
+            'EK': 'Emirates',
+            'LH': 'Lufthansa',
+            'AF': 'Air France',
+            'QR': 'Qatar Airways',
+            'AA': 'American Airlines',
+            'DL': 'Delta Air Lines',
+            'UA': 'United Airlines',
+            'KL': 'KLM',
+            'TK': 'Turkish Airlines',
+            'ET': 'Ethiopian Airlines',
+            'SW': 'Swiss',
+            'QF': 'Qantas',
+            'IB': 'Iberia',
+            'SN': 'Brussels Airlines',
+            'EY': 'Etihad Airways',
+            'AC': 'Air Canada',
+            'AS': 'Alaska Airlines',
+            'B6': 'JetBlue',
+            'F9': 'Frontier Airlines',
+            'G4': 'Allegiant Air',
+            'HA': 'Hawaiian Airlines',
+            'NK': 'Spirit Airlines',
+            'WN': 'Southwest Airlines',
+            'VY': 'Vueling',
+            'AZ': 'ITA Airways',
+            'LX': 'Swiss',
+            'OS': 'Austrian Airlines',
+            'LO': 'LOT Polish Airlines',
+            'SK': 'SAS',
+            'AY': 'Finnair',
+            'EI': 'Aer Lingus',
+            'TP': 'TAP Air Portugal',
+            'FI': 'Icelandair',
+            'DY': 'Norwegian Air',
+            'FR': 'Ryanair',
+            'U2': 'easyJet',
+            'W6': 'Wizz Air',
+            'HV': 'Transavia',
+            'CD': 'Corendon Dutch Airlines',
+            'SA': 'South African Airways',
+            'MS': 'EgyptAir',
+            'SU': 'Aeroflot',
+            'CA': 'Air China',
+            'NH': 'All Nippon Airways',
+            'JL': 'Japan Airlines',
+            'KE': 'Korean Air',
+            'TG': 'Thai Airways',
+            'SQ': 'Singapore Airlines',
+            'MH': 'Malaysia Airlines',
+            'GA': 'Garuda Indonesia',
+            'PR': 'Philippine Airlines',
+            'VN': 'Vietnam Airlines',
+            'AI': 'Air India',
+            '9W': 'Jet Airways',
+            '6E': 'IndiGo',
+            'SG': 'SpiceJet',
+            'AK': 'AirAsia',
+            'FD': 'Thai AirAsia',
+            'QZ': 'Indonesia AirAsia',
+            'D7': 'AirAsia X',
+            'TR': 'Tigerair',
+            'JQ': 'Jetstar Airways',
+            'VA': 'Virgin Australia',
+            'NZ': 'Air New Zealand',
+            'FJ': 'Fiji Airways',
+            'PG': 'Bangkok Airways',
+            'VZ': 'Vistara',
+            'UK': 'Vistara',
+            'AI': 'Air India',
+            '9W': 'Jet Airways',
+            '6E': 'IndiGo',
+            'SG': 'SpiceJet',
+            'AK': 'AirAsia',
+            'FD': 'Thai AirAsia',
+            'QZ': 'Indonesia AirAsia',
+            'D7': 'AirAsia X',
+            'TR': 'Tigerair',
+            'JQ': 'Jetstar Airways',
+            'VA': 'Virgin Australia',
+            'NZ': 'Air New Zealand',
+            'FJ': 'Fiji Airways',
+            'PG': 'Bangkok Airways',
+            'VZ': 'Vistara',
+            'UK': 'Vistara'
+        };
+
+        const AIRLINE_ICAO_MAP = {
+            'KQA':'Kenya Airways','BAW':'British Airways','AFR':'Air France','DLH':'Lufthansa','QTR':'Qatar Airways',
+            'AAL':'American Airlines','DAL':'Delta Air Lines','UAL':'United Airlines','KLM':'KLM','THY':'Turkish Airlines',
+            'ETD':'Etihad Airways','SWR':'Swiss','QFA':'Qantas','IBE':'Iberia','BEL':'Brussels Airlines','ETH':'Ethiopian Airlines',
+            'ACA':'Air Canada','ASA':'Alaska Airlines','JBU':'JetBlue','FFT':'Frontier Airlines','AAY':'Allegiant Air',
+            'HAL':'Hawaiian Airlines','NKS':'Spirit Airlines','SWA':'Southwest Airlines','VLG':'Vueling','ITY':'ITA Airways',
+            'AUA':'Austrian Airlines','LOT':'LOT Polish Airlines','SAS':'SAS','FIN':'Finnair','EIN':'Aer Lingus',
+            'TAP':'TAP Air Portugal','ICE':'Icelandair','NAX':'Norwegian Air','RYR':'Ryanair','EZY':'easyJet',
+            'WZZ':'Wizz Air','TRA':'Transavia','CND':'Corendon Dutch Airlines','SAA':'South African Airways',
+            'MSR':'EgyptAir','AFL':'Aeroflot','CCA':'Air China','ANA':'All Nippon Airways','JAL':'Japan Airlines',
+            'KAL':'Korean Air','THA':'Thai Airways','SIA':'Singapore Airlines','MAS':'Malaysia Airlines',
+            'GIA':'Garuda Indonesia','PAL':'Philippine Airlines','HVN':'Vietnam Airlines','AIC':'Air India',
+            'JAI':'Jet Airways','IGO':'IndiGo','SEJ':'SpiceJet','AXM':'AirAsia','TAA':'Thai AirAsia',
+            'AWQ':'Indonesia AirAsia','XAX':'AirAsia X','TGR':'Tigerair','JST':'Jetstar Airways',
+            'VOZ':'Virgin Australia','ANZ':'Air New Zealand','FJI':'Fiji Airways','BKP':'Bangkok Airways',
+            'VTI':'Vistara'
+        };
+
+        function inferAirlineFromCodes(flight){
+            const num = (flight?.flight?.number || flight?.flight?.iata || '').trim().toUpperCase();
+            if (!num) return '';
+            const iata2 = num.slice(0,2);
+            const icao3 = num.slice(0,3);
+            if (AIRLINE_ICAO_MAP[icao3]) return AIRLINE_ICAO_MAP[icao3];
+            if (AIRLINE_IATA_MAP[iata2]) return AIRLINE_IATA_MAP[iata2];
+            return '';
+        }
+
+        // Function to share flight information
+        function shareFlight(flight) {
+            const departure = flight.departure || {};
+            const arrival = flight.arrival || {};
+            const airline = flight.airline || {};
+            
+            const flightData = {
+                airline: airline.name || inferAirlineFromCodes(flight) || 'Unknown Airline',
+                flightNumber: flight.flight?.number || flight.flight?.iata || 'N/A',
+                departure: departure.iata || 'N/A',
+                arrival: arrival.iata || 'N/A',
+                departureAirport: departure.airport || 'Unknown Airport',
+                arrivalAirport: arrival.airport || 'Unknown Airport',
+                status: flight.flight_status || 'unknown',
+                scheduledDeparture: departure.scheduled ? timeFormat(departure.scheduled) : 'N/A',
+                scheduledArrival: arrival.scheduled ? timeFormat(arrival.scheduled) : 'N/A'
+            };
+            
+            const shareContent = window.shareUtils.createShareContent('flight', flightData);
+            window.shareUtils.quickShare(shareContent, 'flight');
+        }
+
+        // Initialize Day.js plugins
+        dayjs.extend(dayjs_plugin_relativeTime);
+        dayjs.extend(dayjs_plugin_utc);
+        dayjs.extend(dayjs_plugin_timezone);
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAviationApp();
+        });
+
+        function initializeAviationApp() {
+            setupEventListeners();
+            loadSavedTheme();
+            startLiveClock();
+            
+            // Hide loading screen after 1.5 seconds maximum
+            setTimeout(() => {
+                hideLoadingScreen();
+            }, 1500);
+            
+            loadFlightData().then(() => {
+                // Data loaded successfully
+            }).catch(() => {
+                // Error handled in loadFlightData
+            });
+            startAutoRefresh();
+        }
+
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        function startLiveClock() {
+            function updateClock() {
+                try {
+                    const now = dayjs().utc();
+                    const liveClockElement = document.getElementById('live-clock');
+                    const lastUpdatedElement = document.getElementById('global-last-updated');
+                    
+                    if (liveClockElement) {
+                        liveClockElement.textContent = now.format('HH:mm:ss');
+                    }
+                    if (lastUpdatedElement) {
+                        lastUpdatedElement.textContent = `Updated: ${now.format('HH:mm:ss UTC')}`;
+                    }
+                } catch (error) {
+                    console.error('Error updating clock:', error);
+                }
+            }
+            
+            updateClock();
+            clockInterval = setInterval(updateClock, 1000);
+        }
+
+
+
+        function setupEventListeners() {
+            // Search functionality
+            const searchInput = document.getElementById('flight-search');
+            const searchBtn = document.getElementById('search-btn');
+            
+            searchInput.addEventListener('input', debounce(handleSearch, 300));
+            searchBtn.addEventListener('click', handleSearch);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+
+            // Status filter
+            const statusFilter = document.getElementById('status-filter');
+            statusFilter.addEventListener('change', handleFilter);
+
+            // Sort order
+            const sortOrder = document.getElementById('sort-order');
+            sortOrder.addEventListener('change', handleSort);
+
+            // TZ toggle
+            const tzToggle = document.getElementById('tz-toggle');
+            tzToggle.addEventListener('click', ()=>{
+                useLocalTime = !useLocalTime;
+                tzToggle.textContent = useLocalTime ? 'Local' : 'UTC';
+                displayFlights();
+            });
+
+            // Refresh button
+            const refreshBtn = document.getElementById('refresh-btn');
+            refreshBtn.addEventListener('click', () => {
+                loadFlightData(true);
+                resetRefreshCountdown();
+            });
+
+            // Retry button
+            const retryBtn = document.getElementById('retry-button');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    loadFlightData(true);
+                });
+            }
+
+            // Theme functionality
+            setupThemeSelector();
+        }
+
+        function setupThemeSelector() {
+            if (window.themeManager) {
+                return;
+            }
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeModal = document.getElementById('theme-modal');
+            const themeModalClose = document.querySelector('.theme-modal-close');
+            const themeOptions = document.querySelectorAll('.theme-option');
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    themeModal.classList.add('active');
+                });
+            }
+
+            if (themeModalClose) {
+                themeModalClose.addEventListener('click', () => {
+                    themeModal.classList.remove('active');
+                });
+            }
+
+            themeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const theme = option.dataset.theme;
+                    applyTheme(theme);
+                    localStorage.setItem('selectedTheme', theme);
+                    themeModal.classList.remove('active');
+                    
+                    // Update active state
+                    themeOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                });
+            });
+
+            // Close modal when clicking outside
+            themeModal.addEventListener('click', (e) => {
+                if (e.target === themeModal) {
+                    themeModal.classList.remove('active');
+                }
+            });
+        }
+
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('selectedTheme') || 'default';
+            applyTheme(savedTheme);
+            
+            // Update active theme option
+            const themeOptions = document.querySelectorAll('.theme-option');
+            themeOptions.forEach(option => {
+                if (option.dataset.theme === savedTheme) {
+                    option.classList.add('active');
+                }
+            });
+        }
+
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+        }
+
+        async function loadFlightData(forceRefresh = false) {
+            const loadingElement = document.getElementById('flight-loading');
+            const errorElement = document.getElementById('flight-error');
+            const containerElement = document.getElementById('flights-container');
+            const noResultsElement = document.getElementById('no-results');
+
+            // Show loading state
+            loadingElement.style.display = 'block';
+            errorElement.style.display = 'none';
+            containerElement.style.display = 'none';
+            noResultsElement.style.display = 'none';
+
+            try {
+                // Fetch real aviation data with faster timeout
+                const realData = await fetchRealAviationData();
+                if (realData && realData.length > 0) {
+                    allFlights = realData;
+                    filteredFlights = [...allFlights];
+                    displayFlights();
+                    updateFlightCount();
+                    updateFlightLastUpdated();
+                    loadingElement.style.display = 'none';
+                    console.log('Loaded real aviation data:', realData.length, 'flights');
+                } else {
+                    throw new Error('No real aviation data available');
+                }
+            } catch (error) {
+                console.error('Error loading real flight data:', error);
+                // Show error message instead of demo data
+                showAviationError('Unable to load real-time aviation data. Please try again later.');
+                loadingElement.style.display = 'none';
+            }
+        }
+
+        async function fetchRealAviationData() {
+            const flights = [];
+            
+            // Use Promise.race to get the fastest response
+            const promises = [
+                fetchAviationStackData().catch(() => []),
+                fetchOpenSkyData().catch(() => [])
+            ];
+            
+            try {
+                // Wait for the fastest API response (max 3 seconds)
+                const results = await Promise.race([
+                    Promise.allSettled(promises),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
+                ]);
+                
+                if (results && results.length > 0) {
+                    results.forEach(result => {
+                        if (result.status === 'fulfilled' && result.value && result.value.length > 0) {
+                            flights.push(...result.value);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.warn('All aviation APIs failed or timed out:', error);
+            }
+            
+            // Remove duplicates and return unique flights
+            return removeDuplicateFlights(flights);
+        }
+        
+        async function fetchAviationStackData() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2500);
+                
+                const response = await fetch(`${AVIATION_API_URL}&limit=100&flight_status=active`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`AviationStack API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(`AviationStack API error: ${data.error.message}`);
+                }
+                
+                return data.data || [];
+            } catch (error) {
+                console.error('AviationStack API error:', error);
+                return [];
+            }
+        }
+        
+
+        
+        async function fetchOpenSkyData() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000); // Reduced to 2 seconds
+                
+                // OpenSky Network API (free tier, no API key required)
+                const response = await fetch('https://opensky-network.org/api/states/all?lamin=35&lamax=70&lomin=-20&lomax=40', {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`OpenSky API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Convert OpenSky format to our format (limit to first 50 for speed)
+                                    return data.states ? data.states.slice(0, 50).map(state => ({
+                    flight: { 
+                        number: state[1] || 'N/A', 
+                        iata: state[1] || 'N/A' 
+                    },
+                    airline: { name: inferAirlineFromCodes({ flight: { number: state[1], iata: state[1] } }) || 'Unknown' },
+                    flight_status: 'active',
+                    departure: {
+                        iata: 'N/A',
+                        airport: 'Unknown',
+                        scheduled: new Date().toISOString()
+                    },
+                    arrival: {
+                        iata: 'N/A',
+                        airport: 'Unknown',
+                        scheduled: new Date(Date.now() + 2 * 3600000).toISOString()
+                    },
+                    aircraft: { registration: state[0] || 'N/A' }
+                })) : [];
+            } catch (error) {
+                console.error('OpenSky API error:', error);
+                return [];
+            }
+        }
+        
+        function removeDuplicateFlights(flights) {
+            const seen = new Set();
+            return flights.filter(flight => {
+                const key = `${flight.flight?.iata}-${flight.departure?.iata}-${flight.arrival?.iata}`;
+                if (seen.has(key)) {
+                    return false;
+                }
+                seen.add(key);
+                return true;
+            });
+        }
+        
+        function showAviationError(message) {
+            const errorElement = document.getElementById('flight-error');
+            const containerElement = document.getElementById('flights-container');
+            
+            if (errorElement) {
+                errorElement.innerHTML = `
+                    <div class="error-content">
+                        <i class="fas fa-plane-slash"></i>
+                        <h3>Real-Time Aviation Data Unavailable</h3>
+                        <p>${message}</p>
+                        <p class="error-note">We only display real-time flight data from live aviation APIs. No demo or static data is shown to ensure accuracy.</p>
+                        <button id="retry-button" class="retry-button">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+                errorElement.style.display = 'block';
+            }
+            
+            if (containerElement) {
+                containerElement.style.display = 'none';
+            }
+        }
+
+        function displayFlights() {
+            const container = document.getElementById('flights-container');
+            const loadingElement = document.getElementById('flight-loading');
+            const noResultsElement = document.getElementById('no-results');
+
+            loadingElement.style.display = 'none';
+
+            if (filteredFlights.length === 0) {
+                container.style.display = 'none';
+                noResultsElement.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'grid';
+            noResultsElement.style.display = 'none';
+
+            // Apply sort before render
+            applySort();
+            container.innerHTML = filteredFlights.map(flight => createFlightCard(flight)).join('');
+
+            // Bind favorites
+            container.querySelectorAll('.fav-btn').forEach(btn=>{
+                btn.addEventListener('click', ()=>{
+                    const id = btn.dataset.id;
+                    if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+                    setFavs(favorites);
+                    displayFlights();
+                });
+            });
+        }
+
+        function timeFormat(ts){
+            if (!ts) return 'N/A';
+            return useLocalTime ? dayjs(ts).format('HH:mm') : dayjs(ts).utc().format('HH:mm');
+        }
+
+        function createFlightCard(flight) {
+            const departure = flight.departure || {};
+            const arrival = flight.arrival || {};
+            const airline = flight.airline || {};
+            const aircraft = flight.aircraft || {};
+
+            const id = `${flight.flight?.iata||flight.flight?.number||''}-${departure.iata||''}-${arrival.iata||''}`;
+
+            const scheduledDeparture = timeFormat(departure.scheduled);
+            const scheduledArrival = timeFormat(arrival.scheduled);
+            const estimatedDeparture = departure.estimated ? timeFormat(departure.estimated) : null;
+            const estimatedArrival = arrival.estimated ? timeFormat(arrival.estimated) : null;
+
+            const isDepartureDelayed = estimatedDeparture && estimatedDeparture !== scheduledDeparture;
+            const isArrivalDelayed = estimatedArrival && estimatedArrival !== scheduledArrival;
+
+            const statusClass = getStatusClass(flight.flight_status);
+            const statusIcon = getStatusIcon(flight.flight_status);
+
+            const airlineColor = AIRLINE_COLORS[airline.name] || 'var(--primary-color)';
+            const airlineInitial = airline.name ? airline.name.charAt(0).toUpperCase() : 'A';
+            const isFav = favorites.has(id);
+
+            return `
+                <div class="news-card flight-card">
+                    <div class="flight-header">
+                        <div class="airline-info">
+                            <div class="airline-logo" style="background: ${airlineColor};">
+                                <span class="airline-initial">${airlineInitial}</span>
+                            </div>
+                            <div class="airline-details">
+                                <h3 class="airline-name">${airline.name || inferAirlineFromCodes(flight) || 'Unknown Airline'}</h3>
+                                <div class="flight-number">${flight.flight?.number || flight.flight?.iata || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <div class="flight-status ${statusClass}">
+                            <i class="${statusIcon}"></i>
+                            <span>${flight.flight_status || 'unknown'}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin:-.5rem 0 .5rem 0">
+                        <button class="fav-btn" data-id="${id}" title="Favorite" style="border:1px solid var(--border-color);background:var(--surface-color);border-radius:8px;padding:.25rem .5rem;color:${isFav?'#f59e0b':'inherit'}">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <button class="share-flight-btn" onclick="shareFlight(${JSON.stringify(flight).replace(/"/g, '&quot;')})" title="Share Flight" style="border:1px solid var(--border-color);background:var(--surface-color);border-radius:8px;padding:.25rem .5rem">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                        <button class="copy-btn" onclick="navigator.clipboard.writeText('${flight.flight?.number||''} ${departure.iata||''}-${arrival.iata||''}')" title="Copy" style="border:1px solid var(--border-color);background:var(--surface-color);border-radius:8px;padding:.25rem .5rem">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="flight-route">
+                        <div class="airport departure-airport">
+                            <div class="airport-code">${departure.iata || 'N/A'}</div>
+                            <div class="airport-name">${departure.airport || 'Unknown Airport'}</div>
+                            <div class="flight-time">
+                                <span class="scheduled-time">${scheduledDeparture}</span>
+                                ${isDepartureDelayed ? `<span class="delayed-badge">Delayed</span>` : ''}
+                                ${estimatedDeparture ? `<div class="estimated-time">Est: ${estimatedDeparture}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="route-line">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="airport arrival-airport">
+                            <div class="airport-code">${arrival.iata || 'N/A'}</div>
+                            <div class="airport-name">${arrival.airport || 'Unknown Airport'}</div>
+                            <div class="flight-time">
+                                <span class="scheduled-time">${scheduledArrival}</span>
+                                ${isArrivalDelayed ? `<span class="delayed-badge">Delayed</span>` : ''}
+                                ${estimatedArrival ? `<div class="estimated-time">Est: ${estimatedArrival}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    ${aircraft.registration || aircraft.iata ? `
+                    <div class="aircraft-info">
+                        <i class="fas fa-plane-departure"></i>
+                        <span>Aircraft: ${aircraft.registration || aircraft.iata || 'N/A'}</span>
+                    </div>
+                    ` : ''}
+                    <div class="flight-meta">
+                        <span class="flight-date">
+                            <i class="fas fa-calendar"></i>
+                            ${departure.scheduled ? (useLocalTime ? dayjs(departure.scheduled).format('MMM DD, YYYY') : dayjs(departure.scheduled).utc().format('MMM DD, YYYY')) : 'N/A'}
+                        </span>
+                        <span class="flight-duration">
+                            <i class="fas fa-clock"></i>
+                            ${calculateFlightDuration(departure.scheduled, arrival.scheduled)}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateFlightDuration(departure, arrival) {
+            if (!departure || !arrival) return 'N/A';
+            
+            const dep = dayjs(departure);
+            const arr = dayjs(arrival);
+            const duration = arr.diff(dep, 'minute');
+            
+            if (duration < 60) return `${duration}m`;
+            
+            const hours = Math.floor(duration / 60);
+            const minutes = duration % 60;
+            
+            return `${hours}h ${minutes}m`;
+        }
+
+        function getStatusClass(status) {
+            switch (status?.toLowerCase()) {
+                case 'active': return 'status-active';
+                case 'landed': return 'status-landed';
+                case 'cancelled': return 'status-cancelled';
+                case 'delayed': return 'status-delayed';
+                case 'scheduled': return 'status-scheduled';
+                default: return 'status-unknown';
+            }
+        }
+
+        function getStatusIcon(status) {
+            switch (status?.toLowerCase()) {
+                case 'active': return 'fas fa-plane';
+                case 'landed': return 'fas fa-check-circle';
+                case 'cancelled': return 'fas fa-times-circle';
+                case 'delayed': return 'fas fa-clock';
+                case 'scheduled': return 'fas fa-calendar-check';
+                default: return 'fas fa-question-circle';
+            }
+        }
+
+        function handleSearch() {
+            const searchInput = document.getElementById('flight-search');
+            const query = searchInput.value.toLowerCase().trim();
+            
+            if (query === '') {
+                filteredFlights = [...allFlights];
+            } else {
+                filteredFlights = allFlights.filter(flight => {
+                    const airline = flight.airline?.name?.toLowerCase() || '';
+                    const flightNumber = flight.flight?.number?.toLowerCase() || flight.flight?.iata?.toLowerCase() || '';
+                    const departureAirport = flight.departure?.iata?.toLowerCase() || flight.departure?.airport?.toLowerCase() || '';
+                    const arrivalAirport = flight.arrival?.iata?.toLowerCase() || flight.arrival?.airport?.toLowerCase() || '';
+                    
+                    return airline.includes(query) ||
+                           flightNumber.includes(query) ||
+                           departureAirport.includes(query) ||
+                           arrivalAirport.includes(query);
+                });
+            }
+            
+            applyStatusFilter();
+        }
+
+        function handleFilter() {
+            applyStatusFilter();
+        }
+
+        function applyStatusFilter() {
+            const statusFilter = document.getElementById('status-filter');
+            const selectedStatus = statusFilter.value.toLowerCase();
+            
+            if (selectedStatus === '') {
+                // If no status filter, just use search results
+                displayFlights();
+            } else {
+                // Apply status filter to current filtered flights
+                const statusFiltered = filteredFlights.filter(flight => 
+                    flight.flight_status?.toLowerCase() === selectedStatus
+                );
+                
+                // Temporarily update filteredFlights for display
+                const originalFiltered = [...filteredFlights];
+                filteredFlights = statusFiltered;
+                displayFlights();
+                filteredFlights = originalFiltered; // Restore for next search
+            }
+            
+            updateFlightCount();
+        }
+
+        function updateFlightCount() {
+            const countElement = document.getElementById('flight-count');
+            const displayCount = document.querySelectorAll('.flight-card').length;
+            countElement.textContent = `${displayCount} flights found`;
+        }
+
+        function updateFlightLastUpdated() {
+            const lastUpdatedElement = document.getElementById('flight-last-updated');
+            lastUpdatedElement.textContent = `Updated: ${dayjs().format('HH:mm:ss')}`;
+        }
+
+        function showError(message) {
+            const loadingElement = document.getElementById('flight-loading');
+            const errorElement = document.getElementById('flight-error');
+            const errorMessageElement = document.getElementById('error-message');
+
+            loadingElement.style.display = 'none';
+            errorElement.style.display = 'block';
+            
+            if (errorMessageElement) {
+                errorMessageElement.textContent = message;
+            }
+        }
+
+        function startAutoRefresh() {
+            // Refresh data every 60 seconds
+            refreshInterval = setInterval(() => {
+                loadFlightData();
+                resetRefreshCountdown();
+            }, 60000);
+            
+            // Update countdown every second
+            countdownInterval = setInterval(() => {
+                try {
+                    refreshCountdown--;
+                    const countdownElement = document.getElementById('refresh-countdown');
+                    if (countdownElement) {
+                        countdownElement.textContent = refreshCountdown;
+                    }
+                    
+                    if (refreshCountdown <= 0) {
+                        resetRefreshCountdown();
+                    }
+                } catch (error) {
+                    console.error('Error updating countdown:', error);
+                }
+            }, 1000);
+        }
+
+        function resetRefreshCountdown() {
+            refreshCountdown = 60;
+            const countdownElement = document.getElementById('refresh-countdown');
+            if (countdownElement) {
+                countdownElement.textContent = refreshCountdown;
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function handleSort(){
+            applySort();
+            displayFlights();
+        }
+        function applySort(){
+            const order = document.getElementById('sort-order').value;
+            const byTime = (key, asc)=> (a,b)=>{
+                const ta = new Date(a[key]?.scheduled||0).getTime();
+                const tb = new Date(b[key]?.scheduled||0).getTime();
+                return asc ? ta - tb : tb - ta;
+            };
+            if (order==='dep-asc') filteredFlights.sort(byTime('departure', true));
+            else if (order==='dep-desc') filteredFlights.sort(byTime('departure', false));
+            else if (order==='arr-asc') filteredFlights.sort(byTime('arrival', true));
+            else if (order==='arr-desc') filteredFlights.sort(byTime('arrival', false));
+            else if (order==='airline') filteredFlights.sort((a,b)=> (a.airline?.name||'').localeCompare(b.airline?.name||''));
+            // Favorites first
+            const favSet = favorites;
+            filteredFlights.sort((a,b)=> (favSet.has(`${a.flight?.iata||a.flight?.number||''}-${a.departure?.iata||''}-${a.arrival?.iata||''}`)?-1:0) - (favSet.has(`${b.flight?.iata||b.flight?.number||''}-${b.departure?.iata||''}-${b.arrival?.iata||''}`)?-1:0));
+        }
+
+        // Cleanup intervals when page unloads
+        window.addEventListener('beforeunload', () => {
+            if (refreshInterval) clearInterval(refreshInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
+            if (clockInterval) clearInterval(clockInterval);
+        });
+    </script>
+    
+    <!-- Additional CSS for Aviation-specific styling -->
+    <style>
+        /* Page Header Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), #1e40af);
+            border-radius: 16px;
+            color: white;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .live-info {
+            text-align: right;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .live-clock {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timezone {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .last-updated {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Section Styles */
+        .aviation-news-section, .live-flights-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0;
+        }
+
+        .section-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        /* Aviation News Card Styles */
+        .aviation-news-card {
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface-color);
+        }
+
+        .aviation-news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
+        }
+
+        .news-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .aviation-news-card:hover .news-image img {
+            transform: scale(1.05);
+        }
+
+        .news-category {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+            line-height: 1.4;
+            color: var(--text-color);
+        }
+
+        .news-description {
+            color: var(--text-color);
+            opacity: 0.8;
+            line-height: 1.6;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .news-source, .news-time {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .news-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .news-link:hover {
+            color: #1d4ed8;
+            transform: translateX(2px);
+        }
+
+        /* Aviation Controls */
+        .aviation-controls {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-filter-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--background-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-btn, .refresh-btn {
+            padding: 0.75rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover, .refresh-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .status-filter {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--background-color);
+            color: var(--text-color);
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .status-filter:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .refresh-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .auto-refresh-indicator {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Flight Card Styles */
+        .flights-grid {
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .flight-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: var(--surface-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #1e40af);
+        }
+
+        .flight-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+
+        .flight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .airline-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .airline-logo {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            overflow: hidden;
+        }
+
+        .airline-initial {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .airline-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .flight-number {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .flight-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-active { 
+            background: #dcfce7; 
+            color: #166534; 
+        }
+        .status-landed { 
+            background: #dbeafe; 
+            color: #1e40af; 
+        }
+        .status-cancelled { 
+            background: #fee2e2; 
+            color: #dc2626; 
+        }
+        .status-delayed { 
+            background: #fef3c7; 
+            color: #d97706; 
+        }
+        .status-scheduled { 
+            background: #f3e8ff; 
+            color: #7c3aed; 
+        }
+        .status-unknown { 
+            background: #f1f5f9; 
+            color: #64748b; 
+        }
+
+        .flight-route {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .airport {
+            flex: 1;
+            text-align: center;
+        }
+
+        .airport-code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .airport-name {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .flight-time {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .scheduled-time {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .estimated-time {
+            font-size: 0.8rem;
+            color: var(--primary-color);
+        }
+
+        .delayed-badge {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .route-line {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .aircraft-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: 8px;
+        }
+
+        .flight-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .flight-date, .flight-duration {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-note {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-style: italic;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .live-info {
+                text-align: center;
+            }
+
+            .flights-grid {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .search-filter-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                min-width: auto;
+            }
+
+            .refresh-container {
+                justify-content: center;
+            }
+
+            .flight-route {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .route-line {
+                transform: rotate(90deg);
+            }
+
+            .flights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flight-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .aviation-controls {
+                padding: 1rem;
+            }
+
+            .flight-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</body>
+</html>

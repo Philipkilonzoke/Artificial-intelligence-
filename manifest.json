@@ -1,0 +1,49 @@
+{
+  "name": "Brightlens News",
+  "short_name": "Brightlens",
+  "description": "Your trusted gateway to global headlines and real-time news",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e1e1e",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["news", "productivity", "social"],
+  "shortcuts": [
+    {
+      "name": "Breaking News",
+      "short_name": "Breaking",
+      "description": "View latest breaking news",
+      "url": "/breaking.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sports News",
+      "short_name": "Sports",
+      "description": "View latest sports updates",
+      "url": "/sports.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Kenya News",
+      "short_name": "Kenya",
+      "description": "View latest Kenya news",
+      "url": "/kenya.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
