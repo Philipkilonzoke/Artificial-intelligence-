@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💹 Live Crypto Market Updates - Brightlens News</title>
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1e1e1e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Brightlens News" />
+  <link rel="apple-touch-icon" href="/assets/icon-192.svg" />
+  <meta name="description" content="Live cryptocurrency prices for BTC, ETH, SOL, ADA, DOGE and more with charts, search, sort and auto-refresh." />
+
+  <style>
+    :root{--primary-color:#2563eb;--background-color:#ffffff;--text-color:#1e293b;--surface-color:#f8fafc;--border-color:#e2e8f0}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--background-color);color:var(--text-color)}
+    .header{background:var(--surface-color);border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:100}
+    .container{max-width:1200px;margin:0 auto;padding:1rem}
+
+    .hero{background:linear-gradient(135deg,var(--primary-color), #1e293b);color:#fff;padding:2rem 0 1rem}
+    .hero .container{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .title{display:flex;gap:.75rem;align-items:center;font-size:1.4rem;font-weight:700}
+
+    .controls{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+    .search{position:relative}
+    #coin-search{padding:.6rem 2.4rem .6rem .9rem;border:1px solid var(--border-color);border-radius:10px}
+    .search i{position:absolute;right:.6rem;top:50%;transform:translateY(-50%);color:#94a3b8}
+    #coin-sort{padding:.6rem .8rem;border:1px solid var(--border-color);border-radius:10px;background:#fff}
+    #refresh-now{background:var(--primary-color);color:#fff;border:0;padding:.6rem .9rem;border-radius:10px;cursor:pointer}
+
+    .stats{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.75rem}
+    .stat{background:#0b1220;border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:10px;padding:.6rem .9rem}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:1rem}
+    .coin-card{border:1px solid var(--border-color);border-radius:14px;background:var(--surface-color);padding:1rem;cursor:pointer}
+    .coin-card.trending{background:linear-gradient(180deg,#ecfeff,#e0f2fe)}
+    .coin-card.falling{background:linear-gradient(180deg,#fff7ed,#fee2e2)}
+    .coin-top{display:flex;gap:.7rem;align-items:center}
+    .coin-icon{width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid var(--border-color);font-weight:700}
+    .coin-meta{flex:1}
+    .coin-name{font-weight:600}
+    .coin-symbol{color:#64748b;font-size:.9rem}
+    .portfolio-info{color:#059669;font-size:.8rem;font-weight:500;margin-top:.2rem}
+    .coin-actions{display:flex;gap:.3rem;align-items:center}
+    .coin-favorite-btn,.coin-chart-btn,.coin-more-btn{border:1px solid var(--border-color);background:#fff;border-radius:8px;padding:.4rem .5rem;cursor:pointer;transition:all 0.2s ease}
+    .coin-favorite-btn:hover,.coin-chart-btn:hover,.coin-more-btn:hover{background:var(--primary-color);color:white;border-color:var(--primary-color)}
+    .coin-favorite-btn.favorited{background:#ef4444;color:white;border-color:#ef4444}
+    .coin-actions-menu{position:absolute;top:100%;right:0;background:white;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:10;min-width:200px;margin-top:.5rem}
+    .coin-actions-menu .action-btn{display:flex;align-items:center;gap:.5rem;width:100%;padding:.75rem 1rem;border:none;background:none;cursor:pointer;text-align:left;transition:background 0.2s ease}
+    .coin-actions-menu .action-btn:hover{background:#f1f5f9}
+    .coin-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:.6rem}
+    .coin-price{font-weight:700}
+    .coin-change.pos{color:#16a34a}
+    .coin-change.neg{color:#dc2626}
+
+    .loading{display:none;align-items:center;gap:.6rem;justify-content:center;padding:1rem}
+    .loading .spinner{width:24px;height:24px;border:3px solid rgba(0,0,0,.1);border-left-color:var(--primary-color);border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Chart panel */
+    #chart-panel{display:none;margin:1rem 0;border:1px solid var(--border-color);border-radius:14px;background:#fff}
+    .chart-header{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem;border-bottom:1px solid var(--border-color)}
+    .ranges{display:flex;gap:.5rem}
+    .ranges button{border:1px solid var(--border-color);background:#fff;border-radius:8px;padding:.35rem .6rem;cursor:pointer}
+    .ranges .active{background:var(--primary-color);color:#fff;border-color:var(--primary-color)}
+    .chart-body{position:relative;height:320px;padding:.5rem}
+    .chart-title{font-weight:600}
+
+    .error{display:none;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:10px;padding:.6rem .8rem;margin-top:1rem}
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .coin-actions{flex-direction:column;gap:.2rem}
+      .coin-actions-menu{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:300px;margin:0}
+      .coin-actions-menu .action-btn{padding:1rem;font-size:1rem}
+      .stats{flex-direction:column;gap:.5rem}
+      .controls{flex-direction:column;gap:.5rem}
+      .search{width:100%}
+      #coin-search{width:100%;box-sizing:border-box}
+    }
+
+    /* Page splash screen (consistent with other categories) */
+    .loading-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--primary-color);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.3s}
+    .loading-screen.hidden{opacity:0;visibility:hidden}
+    .loading-container{text-align:center;color:white}
+    .loading-spinner{width:60px;height:60px;border:4px solid rgba(255,255,255,0.3);border-top:4px solid white;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+  </style>
+
+  <link rel="preload" href="css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="css/themes.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/css/settings.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/styles.css"><link rel="stylesheet" href="css/themes.css"><link rel="stylesheet" href="/css/settings.css"></noscript>
+
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script src="/js/push-notifications.js" defer></script>
+  <script src="/js/sidebar-navigation.js" defer></script>
+  <script src="/js/themes.js" defer></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'))
+    }
+  </script>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <h2>Brightlens News</h2>
+      <p>Loading crypto market...</p>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <h1><a href="/" style="color:inherit;text-decoration:none"><i class="fas fa-newspaper"></i> Brightlens News</a></h1>
+        </div>
+        <nav class="nav">
+          <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/breaking" class="nav-link">Breaking</a>
+            <a href="/kenya" class="nav-link">Kenya</a>
+            <a href="/world" class="nav-link">World</a>
+            <a href="/entertainment" class="nav-link">Entertainment</a>
+            <a href="/technology" class="nav-link">Technology</a>
+            <a href="/business" class="nav-link">Business</a>
+            <a href="/sports" class="nav-link">Sports</a>
+            <a href="/health" class="nav-link">Health</a>
+            <a href="/lifestyle" class="nav-link">Lifestyle</a>
+            <a href="/food" class="nav-link">Food</a>
+            <a href="/crypto" class="nav-link active">Crypto 🪙</a>
+            <a href="/astronomy" class="nav-link">Astronomy</a>
+            <a href="/aviation" class="nav-link">Aviation</a>
+          </div>
+          <div class="nav-controls">
+            <button id="theme-toggle" class="theme-toggle" title="Change Theme">
+              <i class="fas fa-palette"></i>
+            </button>
+          </div>
+          <script src="/js/settings.js" defer></script>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="title">💹 Live Crypto Market Updates</div>
+      <div class="controls">
+        <div class="search">
+          <input id="coin-search" placeholder="Search by symbol or name" />
+          <i class="fas fa-search"></i>
+        </div>
+        <select id="coin-sort">
+          <option value="market">Sort: Default</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="change-desc">% Change: High → Low</option>
+          <option value="change-asc">% Change: Low → High</option>
+          <option value="name">Name</option>
+        </select>
+        <button id="refresh-now"><i class="fas fa-rotate"></i> Refresh Now</button>
+      </div>
+    </div>
+    <div class="container stats">
+      <div class="stat">Tracked: <strong id="stat-count">—</strong></div>
+      <div class="stat">Sum of prices: <strong id="stat-sum">—</strong></div>
+    </div>
+  </section>
+
+  <main class="main">
+    <div class="container">
+      <div id="crypto-loading" class="loading"><div class="spinner"></div> <span>Loading market data…</span></div>
+      <div id="crypto-error" class="error"><strong>Error:</strong> <span class="error-message"></span></div>
+
+      <div id="coin-grid" class="grid"></div>
+
+      <div id="chart-panel">
+        <div class="chart-header">
+          <div class="chart-title" id="chart-title">Chart</div>
+          <div class="ranges">
+            <button data-range="1h">1h</button>
+            <button data-range="24h" class="active">24h</button>
+            <button data-range="7d">7d</button>
+            <button id="chart-close" title="Close"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+        <div class="chart-body"><canvas id="chart-canvas"></canvas></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-wave">
+      <svg viewBox="0 0 1440 120" fill="none" xmlns="https://www.w3.org/2000/svg">
+        <path d="M0,64L48,58.7C96,53,192,43,288,48C384,53,480,75,576,80C672,85,768,75,864,64C960,53,1056,43,1152,48C1248,53,1344,75,1392,85.3L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z" fill="var(--primary-color)"/>
+      </svg>
+    </div>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section footer-brand">
+          <div class="footer-logo">
+            <h4>
+              <i class="fas fa-newspaper footer-icon"></i>
+              Brightlens News
+            </h4>
+            <div class="footer-tagline">Your Gateway to Global News</div>
+          </div>
+          <p>Your trusted source for comprehensive news coverage from multiple reliable sources worldwide. Stay informed with real-time updates.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/crypto-v2.js" defer></script>
+</body>
+</html>
