@@ -297,18 +297,21 @@
     <!-- Reading Progress Bar -->
     <div id="reading-progress" class="reading-progress"></div>
 
-    <!-- JavaScript -->
+    <!-- JavaScript - Load in proper order -->
     <script src="https://unpkg.com/rss-parser/dist/rss-parser.min.js"></script>
+    <script src="js/cookie-manager.js"></script>
+    <script src="js/themes.js"></script>
     <script src="js/news-api.js"></script>
     <script src="js/mediastack-supplement.js"></script>
     <script src="js/news-sources.js"></script>
-    <script src="js/cookie-manager.js"></script>
-    <script src="js/themes.js"></script>
     <script src="js/category-news.js"></script>
     <script src="js/simple-features.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            window.categoryNews = new CategoryNews('technology');
+            // Ensure all scripts are loaded before initializing
+            setTimeout(() => {
+                window.categoryNews = new CategoryNews('technology');
+            }, 100);
         });
     </script>
 </body>

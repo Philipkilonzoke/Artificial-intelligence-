@@ -6,7 +6,6 @@
 // Category-specific news loading
 class CategoryNews {
     constructor(category) {
-        this.newsAPI = new NewsAPI();
         this.category = category;
         this.currentPage = 1;
         this.articlesPerPage = 50;
@@ -14,7 +13,34 @@ class CategoryNews {
         this.displayedArticles = [];
         this.isLoading = false;
         
-        this.init();
+        // Wait for NewsAPI to be available before initializing
+        this.waitForNewsAPI().then(() => {
+            this.newsAPI = new NewsAPI();
+            this.init();
+        }).catch(error => {
+            console.error('Failed to initialize NewsAPI:', error);
+            this.showNewsError('Failed to initialize news system. Please refresh the page.');
+        });
+    }
+
+    async waitForNewsAPI() {
+        return new Promise((resolve, reject) => {
+            let attempts = 0;
+            const maxAttempts = 50; // 5 seconds timeout
+            
+            const checkNewsAPI = () => {
+                attempts++;
+                if (typeof NewsAPI !== 'undefined') {
+                    resolve();
+                } else if (attempts >= maxAttempts) {
+                    reject(new Error('NewsAPI not loaded'));
+                } else {
+                    setTimeout(checkNewsAPI, 100);
+                }
+            };
+            
+            checkNewsAPI();
+        });
     }
 
     init() {
